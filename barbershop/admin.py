@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Master, Service, Visit
+from .models import Master, Service, Visit, MasterReview
 
 @admin.register(Master)
 class MasterAdmin(admin.ModelAdmin):
@@ -12,3 +12,7 @@ class ServiceAdmin(admin.ModelAdmin):
 @admin.register(Visit)
 class VisitAdmin(admin.ModelAdmin):
     list_display = ('name', 'phone', 'master', 'service', 'date')
+
+@admin.register(MasterReview)
+class MasterReviewAdmin(admin.ModelAdmin):
+    list_display = ('author', 'text', 'rating', 'is_approved')

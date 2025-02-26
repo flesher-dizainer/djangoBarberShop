@@ -1,7 +1,7 @@
 import asyncio
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from .models import Visit
+from .models import Visit, MasterReview
 import telegram
 import os
 from dotenv import load_dotenv
@@ -36,3 +36,9 @@ async def send_telegram_message(instance):
         f"Дата и время: {instance.date}"
     )
     await bot.send_message(chat_id=CHAT_ID, text=message)
+
+@receiver(post_save, sender=MasterReview)
+def notify_admin_about_new_review(sender, instance, created, **kwargs):
+    if created:
+        subject = 'Новый отзыв требует модерации'
+        message = f'Получен новый отзыв от {instance.author} о мастере {instance.master}.\nТекст: {instance.text}\nОценка: {instance.rating}'
