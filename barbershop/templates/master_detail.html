@@ -1,69 +1,80 @@
 {% extends 'base.html' %}
 
 {% block title %}{{ master.first_name }} {{ master.last_name }}{% endblock %}
-
+{% block scripts %}
+<script>
+document.getElementById('reviewForm').addEventListener('submit', function() {
+    const button = document.getElementById('submitButton');
+    const spinner = button.querySelector('.spinner-border');
+    button.disabled = true;
+    spinner.classList.remove('d-none');
+});
+</script>
+{% endblock %}
 {% block content %}
-<div class="container my-5">
-    <!-- Информация о мастере -->
-    <div class="row">
-        <div class="col-md-4">
-            <img src="{{ master.photo.url }}" class="img-fluid rounded" alt="{{ master.first_name }}">
-        </div>
-        <div class="col-md-8">
-            <h2>{{ master.first_name }} {{ master.last_name }}</h2>
-            <p>{{ master.contact_info }}</p>
+    <div class="container my-5">
+        <!-- Информация о мастере -->
+        <div class="row">
+            <div class="col-md-4">
+                <img src="{{ master.photo.url }}" class="img-fluid rounded" alt="{{ master.first_name }}">
+            </div>
+            <div class="col-md-8">
+                <h2>{{ master.first_name }} {{ master.last_name }}</h2>
+                <p>{{ master.contact_info }}</p>
 
-            <!-- Список услуг мастера -->
-            <h4>Услуги мастера:</h4>
-            <ul class="list-group">
-                {% for service in master.services.all %}
-                <li class="list-group-item">{{ service.name }} - {{ service.price }} руб.</li>
-                {% endfor %}
-            </ul>
+                <!-- Список услуг мастера -->
+                <h4>Услуги мастера:</h4>
+                <ul class="list-group">
+                    {% for service in master.services.all %}
+                        <li class="list-group-item">{{ service.name }} - {{ service.price }} руб.</li>
+                    {% endfor %}
+                </ul>
+            </div>
         </div>
-    </div>
 
-    <!-- Форма отзыва -->
-    <div class="row mt-5">
-        <div class="col-md-8">
-            <h3>Оставить отзыв</h3>
-            <form method="post">
-                {% csrf_token %}
-                {{ review_form.as_p }}
-                <button type="submit" class="btn btn-primary">Отправить отзыв</button>
-            </form>
+        <!-- Форма отзыва -->
+        <div class="row mt-5">
+            <div class="col-md-8">
+                <h3>Оставить отзыв</h3>
+                <form method="post" id="reviewForm">
+                    {% csrf_token %}
+                    {{ review_form.as_p }}
+                    <button type="submit" class="btn btn-primary" id="submitButton">
+                        <span class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        Отправить отзыв
+                    </button>
+                </form>
+            </div>
         </div>
-    </div>
 
-    <!-- Список отзывов -->
-<!-- В секции отзывов -->
-<div class="row mt-5">
-    <div class="col-12">
-        <h3>Отзывы о мастере</h3>
-        {% for review in reviews %}
-            {% if review.is_approved %}
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ review.author }}</h5>
-                        <div class="rating mb-2">
-                            {% for i in "12345"|make_list %}
-                                {% if forloop.counter <= review.rating %}
-                                    <i class="fas fa-star text-warning"></i>
-                                {% else %}
-                                    <i class="far fa-star"></i>
-                                {% endif %}
-                            {% endfor %}
+        <!-- Список отзывов -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3>Отзывы о мастере</h3>
+                {% for review in reviews %}
+                    {% if review.is_approved %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ review.author }}</h5>
+                                <div class="rating mb-2">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= review.rating %}
+                                            <i class="fas fa-star text-warning"></i>
+                                        {% else %}
+                                            <i class="far fa-star"></i>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                                <p class="card-text">{{ review.text }}</p>
+                                <small class="text-muted">{{ review.created_at|date:"d.m.Y H:i" }}</small>
+                            </div>
                         </div>
-                        <p class="card-text">{{ review.text }}</p>
-                        <small class="text-muted">{{ review.created_at|date:"d.m.Y H:i" }}</small>
-                    </div>
-                </div>
-            {% endif %}
-        {% empty %}
-            <p>Пока нет одобренных отзывов о мастере.</p>
-        {% endfor %}
-    </div>
-</div>
+                    {% endif %}
+                {% empty %}
+                    <p>Пока нет одобренных отзывов о мастере.</p>
+                {% endfor %}
+            </div>
+        </div>
 
-</div>
+    </div>
 {% endblock %}

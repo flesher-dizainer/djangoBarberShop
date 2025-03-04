@@ -17,13 +17,35 @@
         <div class="row justify-content-center">
             {% for master in masters %}
             <div class="col-md-3 mb-3">
-                <div class="card h-100">
-                    <img src="{{ master.photo.url }}" class="card-img-top master-photo" alt="{{ master.first_name }} {{ master.last_name }}">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">{{ master.first_name }} {{ master.last_name }}</h5>
-                        <p class="card-text">{{ master.contact_info }}</p>
+                <!-- Добавляем ссылку на страницу мастера -->
+                <a href="{% url 'barbershop:master_detail' master_id=master.id %}" style="text-decoration: none; color: inherit;">
+                    <div class="card h-100">
+                        <img src="{{ master.photo.url }}" class="card-img-top master-photo" alt="{{ master.first_name }} {{ master.last_name }}">
+
+                        <!-- Inside the master card, add this after the card-text paragraph -->
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ master.first_name }} {{ master.last_name }}</h5>
+                            <p class="card-text">{{ master.contact_info }}</p>
+                            <div class="rating">
+                                {% with rating=master.get_rating %}
+                                    <span class="text-warning">
+                                        {% for i in "12345"|make_list %}
+                                            {% if forloop.counter <= rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </span>
+                                    <span>({{ rating }})</span>
+                                {% endwith %}
+                            </div>
+                        </div>
+
+
+
                     </div>
-                </div>
+                </a>
             </div>
             {% endfor %}
         </div>
