@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-
+from django.contrib import messages
 from django.shortcuts import redirect, render, get_object_or_404
 from django.views.generic import TemplateView
 from django.views.generic.edit import FormView
@@ -75,7 +75,9 @@ class MasterDetailView(View):
             review = form.save(commit=False)
             review.master = master
             review.save()
-            return redirect('barbershop:master_detail', master_id=master_id)
+            messages.success(request, 'Спасибо! Ваш отзыв отправлен на модерацию.')
+            return redirect('barbershop:index')
+            # return redirect('barbershop:master_detail', master_id=master_id)
         return render(request, 'master_detail.html', {
             'master': master,
             'review_form': form,
